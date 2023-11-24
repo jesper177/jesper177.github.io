@@ -15,6 +15,7 @@ function draw() {
   fill('white');
   ellipse(225,225,300);
   
+   
   // witte rechthoek met rode rand
   
   stroke('green');
