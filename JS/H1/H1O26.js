@@ -30,7 +30,7 @@ function tekenHuis() {
   rect(20, 210, 30, 50);
   pop();
 }
-
+ 
 function tekenBoom(x) {
   push();
   noStroke();
