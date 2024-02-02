@@ -1,43 +1,96 @@
-var xJOS;
-var yJOS;
+var ballX;
+var ballY;
+var ballSpeed = 10; // Increased speed of the ball
+
+var startButton;
+var maze;
 
 function setup() {
-  canvas = createCanvas(450, 450);
-  canvas.parent('processing');
-  textFont("Verdana");
-  textSize(14);
+  createCanvas(800, 800);
+  noStroke(); // Disable outline for the entire canvas
+  ballX = width / 4; // Initial x-coordinate for the red ball
+  ballY = height / 4; // Initial y-coordinate for the red ball
+
+  // Define the maze based on the canvas size
+  var rows = floor(height / 100); // Number of rows in the maze
+  var cols = floor(width / 100); // Number of columns in the maze
+  maze = generateMaze(rows, cols);
+
+  // Create the start button
+  startButton = createButton('Start');
+  startButton.position(width / 2 - 40, height / 2 - 20); // Center the button
+  startButton.mousePressed(startGame);
 }
 
 function draw() {
-  background('lavender');
-  fill('black');
-  text("xJOS: " + round(xJOS) + " (mouseX:" + round(mouseX) + ")", 10, 20);
-  text("yJOS: " + round(yJOS) + " (mouseY:" + round(mouseY) + ")", 260, 20);
+  background(220); // Set background color to a light shade
 
-  xJOS = constrain(mouseX, 75, 375);
-  yJOS = constrain(mouseY, 75, 375);
+  // Draw a yellow square in the center filling 3/4th of the canvas
+  fill('white'); // Set fill color to white
+  rectMode(CENTER);
+  var squareSize = min(width, height) * 3 / 4; // Set square size to 3/4th of the canvas dimension
+  rect(width / 2, height / 2, squareSize, squareSize);
 
-  translate(xJOS, yJOS);
-  scale(0.5); // Plaats de schaalregel hier
+  // Draw a yellow border around the white square
+  stroke('yellow'); // Set border color to yellow
+  strokeWeight(5); // Set the border thickness
+  noFill(); // Disable fill for the border
+  rect(width / 2, height / 2, squareSize, squareSize);
 
-  // in de volgende regels wordt JOS getekend
+  // Add a red ball with a red outline
+  fill('red');
+  stroke('red'); // Set border color to red
+  strokeWeight(2); // Set the border thickness for the ball
+  ellipse(ballX, ballY, 30, 30);
 
-  push();
-  noStroke();
-  fill('indianred');
-  ellipse(0, 0, 150);
-  fill('slategray');
-  ellipse(-20, -30, 50);
-  ellipse(20, -30, 50);
-  fill('white');
-  ellipse(-20, -25, 20, 40);
-  ellipse(20, -25, 20, 40);
-  fill('orange');
-  ellipse(0, 10, 50);
-  stroke('slategray');
-  strokeWeight(10);
-  fill('white');
-  arc(0, 40, 80, 40, 0, PI, CHORD);
-  pop();
-  // einde tekenen JOS
+  // Draw the maze
+  var cellSize = squareSize / maze.length;
+  for (var i = 0; i < maze.length; i++) {
+    for (var j = 0; j < maze[i].length; j++) {
+      if (maze[i][j] === 1) {
+        fill('black'); // Set fill color to black for walls
+        rect(j * cellSize + cellSize / 2, i * cellSize + cellSize / 2, cellSize, cellSize);
+      }
+    }
+  }
+}
+
+function keyPressed() {
+  // Move the red ball with arrow keys if the game is started
+  if (startButton.elt.disabled) {
+    if (keyCode === UP_ARROW && ballY > 15) {
+      ballY -= ballSpeed;
+    } else if (keyCode === DOWN_ARROW && ballY < height - 15) {
+      ballY += ballSpeed;
+    } else if (keyCode === LEFT_ARROW && ballX > 15) {
+      ballX -= ballSpeed;
+    } else if (keyCode === RIGHT_ARROW && ballX < width - 15) {
+      ballX += ballSpeed;
+    }
+  }
+}
+
+function startGame() {
+  // Enable the start button and focus on it to make sure key events are detected
+  startButton.elt.disabled = true;
+  startButton.elt.focus();
+}
+
+function generateMaze(rows, cols) {
+  // Implement your maze generation logic here
+  // Return a 2D array representing the maze
+  // 0 for open path, 1 for walls
+  // Example: return [[0, 1, 0], [1, 0, 1], [0, 1, 0]];
+  // For simplicity, you can return a hardcoded maze for now
+
+  var maze = [];
+  for (var i = 0; i < rows; i++) {
+    var row = [];
+    for (var j = 0; j < cols; j++) {
+      row.push(1);
+    }
+    maze.push(row);
+  }
+
+  return maze;
 }
